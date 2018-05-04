@@ -1,0 +1,48 @@
+FROM ubuntu:16.04
+RUN apt-get update
+RUN apt-get install locales
+
+# Set the locale
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+# Install dependencies
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update
+RUN apt-get install -qq wget unzip build-essential cmake gcc libcunit1-dev libudev-dev apt-utils libapt-inst2.0 sudo
+# Grab the checked out source
+RUN mkdir -p /workdir
+WORKDIR /workdir
+COPY . /workdir
+#FROM ubuntu:latest
+MAINTAINER vamsi
+#ARG DEBIAN_FRONTEND=noninteractive
+#ARG DEBIAN_FRONTEND teletype
+
+#RUN apt-get update \
+#&& apt-get -y install sudo \
+#&& apt-get -y install apt-utils  \
+#&& apt-get -y install curl \
+#&& apt-get -y install git \
+#&& apt-get -y install libapt-inst2.0 \
+#&& apt-get -y install wget
+
+#RUN apt-get update -y && apt-get install apt-utils -y && apt-get install libapt-inst2.0 -y && apt-get update
+#RUN apt-get update && apt-get upgrade -y -o Dpkg::Options::="--force-confold"
+#RUN apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*
+#RUN wget -q -O- http://apt.nuxeo.org/nuxeo.key
+#RUN apt-get install gnupg
+#Install JAVA
+RUN  apt-get install openjdk-8-jdk -y
+ENV  JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+RUN  apt-cache search maven  && apt-get install maven -y
+
+#install jenkins
+RUN wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add -
+RUN sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+RUN sudo apt-get update -y
+RUN sudo apt-get install jenkins -y
+RUN service jenkins restart
+
